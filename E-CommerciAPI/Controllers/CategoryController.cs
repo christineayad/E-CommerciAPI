@@ -14,7 +14,7 @@ namespace E_CommerciAPI.Controllers
         public CategoryController(ApplicationDbContext context) {
             _context = context;
         }
-        [HttpGet]
+        [HttpGet("[Action]")]
         public async Task<IActionResult> GetAll()
         {
             var categories = await _context.Categories.ToListAsync();
@@ -27,7 +27,7 @@ namespace E_CommerciAPI.Controllers
             if (category == null) return NotFound();
             return Ok(category);
         }
-        [HttpPost]
+        [HttpPost("[Action]")]
         public async Task<IActionResult> Create(Categorydto cat)
         {
             if (cat == null)
@@ -72,3 +72,4 @@ namespace E_CommerciAPI.Controllers
 
     }
 }
+//
