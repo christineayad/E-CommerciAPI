@@ -4,6 +4,7 @@ using E_CommerciAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_CommerciAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241208140856_deleteorder")]
+    partial class deleteorder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,18 +111,18 @@ namespace E_CommerciAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Cart");
                 });
 
             modelBuilder.Entity("E_CommerciAPI.Model.CartProduct", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CartId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartId"));
 
-                    b.Property<int>("CartId")
+                    b.Property<int>("CartId1")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
@@ -128,13 +131,13 @@ namespace E_CommerciAPI.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("CartId");
 
-                    b.HasIndex("CartId");
+                    b.HasIndex("CartId1");
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartProducts");
+                    b.ToTable("CartProduct");
                 });
 
             modelBuilder.Entity("E_CommerciAPI.Model.Category", b =>
@@ -153,6 +156,62 @@ namespace E_CommerciAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("E_CommerciAPI.Model.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Method")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("orderDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("Order");
+                });
+
+            modelBuilder.Entity("E_CommerciAPI.Model.OrderDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderDetails");
                 });
 
             modelBuilder.Entity("E_CommerciAPI.Model.Product", b =>
@@ -332,7 +391,7 @@ namespace E_CommerciAPI.Migrations
                 {
                     b.HasOne("E_CommerciAPI.Model.Cart", "Cart")
                         .WithMany("CartProducts")
-                        .HasForeignKey("CartId")
+                        .HasForeignKey("CartId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -345,6 +404,32 @@ namespace E_CommerciAPI.Migrations
                     b.Navigation("Cart");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("E_CommerciAPI.Model.Order", b =>
+                {
+                    b.HasOne("E_CommerciAPI.Model.AppUser", null)
+                        .WithMany("Orderes")
+                        .HasForeignKey("AppUserId");
+                });
+
+            modelBuilder.Entity("E_CommerciAPI.Model.OrderDetails", b =>
+                {
+                    b.HasOne("E_CommerciAPI.Model.Order", "order")
+                        .WithMany("orderDetails")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("E_CommerciAPI.Model.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("order");
                 });
 
             modelBuilder.Entity("E_CommerciAPI.Model.Product", b =>
@@ -409,6 +494,11 @@ namespace E_CommerciAPI.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("E_CommerciAPI.Model.AppUser", b =>
+                {
+                    b.Navigation("Orderes");
+                });
+
             modelBuilder.Entity("E_CommerciAPI.Model.Cart", b =>
                 {
                     b.Navigation("AppUser");
@@ -419,6 +509,11 @@ namespace E_CommerciAPI.Migrations
             modelBuilder.Entity("E_CommerciAPI.Model.Category", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("E_CommerciAPI.Model.Order", b =>
+                {
+                    b.Navigation("orderDetails");
                 });
 
             modelBuilder.Entity("E_CommerciAPI.Model.Product", b =>

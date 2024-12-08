@@ -6,10 +6,10 @@ namespace E_CommerciAPI.Model
     {
         public AppUser()
         {
-            Cart = new Cart();
+        Cart = new Cart();
         }
         public int? CartId { get; set; }
-        public Cart Cart { get; set; }
-        public ICollection<Order> Orderes { get; set; }
+        public virtual Cart? Cart { get; set; }
+        //public ICollection<Order> Orderes { get; set; }
     }
 }

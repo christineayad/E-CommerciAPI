@@ -4,6 +4,7 @@ using E_CommerciAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_CommerciAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241208143014_DeleteCart")]
+    partial class DeleteCart
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,9 +31,6 @@ namespace E_CommerciAPI.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CartId")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -79,10 +79,6 @@ namespace E_CommerciAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CartId")
-                        .IsUnique()
-                        .HasFilter("[CartId] IS NOT NULL");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -102,24 +98,29 @@ namespace E_CommerciAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Carts");
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("Cart");
                 });
 
             modelBuilder.Entity("E_CommerciAPI.Model.CartProduct", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CartId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartId"));
 
-                    b.Property<int>("CartId")
+                    b.Property<int>("CartId1")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
@@ -128,13 +129,13 @@ namespace E_CommerciAPI.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("CartId");
 
-                    b.HasIndex("CartId");
+                    b.HasIndex("CartId1");
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartProducts");
+                    b.ToTable("CartProduct");
                 });
 
             modelBuilder.Entity("E_CommerciAPI.Model.Category", b =>
@@ -319,20 +320,20 @@ namespace E_CommerciAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("E_CommerciAPI.Model.AppUser", b =>
+            modelBuilder.Entity("E_CommerciAPI.Model.Cart", b =>
                 {
-                    b.HasOne("E_CommerciAPI.Model.Cart", "Cart")
-                        .WithOne("AppUser")
-                        .HasForeignKey("E_CommerciAPI.Model.AppUser", "CartId");
+                    b.HasOne("E_CommerciAPI.Model.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AppUserId");
 
-                    b.Navigation("Cart");
+                    b.Navigation("AppUser");
                 });
 
             modelBuilder.Entity("E_CommerciAPI.Model.CartProduct", b =>
                 {
                     b.HasOne("E_CommerciAPI.Model.Cart", "Cart")
                         .WithMany("CartProducts")
-                        .HasForeignKey("CartId")
+                        .HasForeignKey("CartId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -411,8 +412,6 @@ namespace E_CommerciAPI.Migrations
 
             modelBuilder.Entity("E_CommerciAPI.Model.Cart", b =>
                 {
-                    b.Navigation("AppUser");
-
                     b.Navigation("CartProducts");
                 });
 

@@ -4,6 +4,7 @@ using E_CommerciAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_CommerciAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241205161523_Update-AppUser2")]
+    partial class UpdateAppUser2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,13 +116,13 @@ namespace E_CommerciAPI.Migrations
 
             modelBuilder.Entity("E_CommerciAPI.Model.CartProduct", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CartId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartId"));
 
-                    b.Property<int>("CartId")
+                    b.Property<int>("CartId1")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
@@ -128,9 +131,9 @@ namespace E_CommerciAPI.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("CartId");
 
-                    b.HasIndex("CartId");
+                    b.HasIndex("CartId1");
 
                     b.HasIndex("ProductId");
 
@@ -155,6 +158,34 @@ namespace E_CommerciAPI.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("E_CommerciAPI.Model.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Method")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
             modelBuilder.Entity("E_CommerciAPI.Model.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -176,12 +207,17 @@ namespace E_CommerciAPI.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("OrderId");
 
                     b.ToTable("Products");
                 });
@@ -332,7 +368,7 @@ namespace E_CommerciAPI.Migrations
                 {
                     b.HasOne("E_CommerciAPI.Model.Cart", "Cart")
                         .WithMany("CartProducts")
-                        .HasForeignKey("CartId")
+                        .HasForeignKey("CartId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -347,6 +383,17 @@ namespace E_CommerciAPI.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("E_CommerciAPI.Model.Order", b =>
+                {
+                    b.HasOne("E_CommerciAPI.Model.AppUser", "User")
+                        .WithMany("Orderes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("E_CommerciAPI.Model.Product", b =>
                 {
                     b.HasOne("E_CommerciAPI.Model.Category", "Category")
@@ -354,6 +401,10 @@ namespace E_CommerciAPI.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("E_CommerciAPI.Model.Order", null)
+                        .WithMany("Products")
+                        .HasForeignKey("OrderId");
 
                     b.Navigation("Category");
                 });
@@ -409,6 +460,11 @@ namespace E_CommerciAPI.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("E_CommerciAPI.Model.AppUser", b =>
+                {
+                    b.Navigation("Orderes");
+                });
+
             modelBuilder.Entity("E_CommerciAPI.Model.Cart", b =>
                 {
                     b.Navigation("AppUser");
@@ -417,6 +473,11 @@ namespace E_CommerciAPI.Migrations
                 });
 
             modelBuilder.Entity("E_CommerciAPI.Model.Category", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("E_CommerciAPI.Model.Order", b =>
                 {
                     b.Navigation("Products");
                 });

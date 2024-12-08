@@ -9,9 +9,13 @@
     {
         public int Id { get; set; }
         public decimal Amount { get; set; }
-        public DateTime Date { get; set; } = DateTime.UtcNow;
-        public AppUser User { get; set; }
-        public ICollection<Product> Products { get; set; }
+        public DateTime orderDate { get; set; } = DateTime.UtcNow;
+       // public int userID { get; set; }
+      //  public virtual AppUser? User { get; set; }
+      
         public PaymentMethods Method { get; set; }
+       // public ICollection<Product> Products { get; set; }
+        public ICollection<OrderDetails> orderDetails { get; set; }
+     
     }
 }

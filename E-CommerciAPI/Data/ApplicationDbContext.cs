@@ -11,11 +11,13 @@ namespace E_CommerciAPI.Data
         {
 
         }
-       public  DbSet<AppUser> AppUsers { get; set; }
+        public  DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Product> Products { get; set; }
+       public DbSet<Product> Products { get; set; }
         public DbSet<CartProduct> CartProducts { get; set; }
-        public DbSet<Order> Orders { get; set; }
+        //public DbSet<Order> Orders { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        //public DbSet<OrderDetails> OrderDetails { get; set; }
 
     }
 }

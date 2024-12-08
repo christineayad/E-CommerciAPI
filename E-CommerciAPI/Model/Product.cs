@@ -12,6 +12,6 @@ namespace E_CommerciAPI.Model
         public string Description { get; set; }
         public int CategoryId { get; set; }
         public Category Category { get; set; }
-        public ICollection<CartProduct> CartProducts { get; set; }
+       public ICollection<CartProduct> CartProducts { get; set; }
     }
 }
