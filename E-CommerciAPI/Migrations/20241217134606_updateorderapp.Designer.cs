@@ -4,6 +4,7 @@ using E_CommerciAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_CommerciAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241217134606_updateorderapp")]
+    partial class updateorderapp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -171,10 +174,6 @@ namespace E_CommerciAPI.Migrations
 
                     b.Property<int>("Method")
                         .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("orderDate")
                         .HasColumnType("datetime2");
@@ -414,11 +413,9 @@ namespace E_CommerciAPI.Migrations
 
             modelBuilder.Entity("E_CommerciAPI.Model.Order", b =>
                 {
-                    b.HasOne("E_CommerciAPI.Model.AppUser", "AppUser")
+                    b.HasOne("E_CommerciAPI.Model.AppUser", null)
                         .WithMany("Orderes")
                         .HasForeignKey("AppUserId");
-
-                    b.Navigation("AppUser");
                 });
 
             modelBuilder.Entity("E_CommerciAPI.Model.OrderDetails", b =>
