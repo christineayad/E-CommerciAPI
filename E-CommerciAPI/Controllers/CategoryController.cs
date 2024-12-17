@@ -1,6 +1,7 @@
 ﻿using E_CommerciAPI.Data;
 using E_CommerciAPI.DTO;
 using E_CommerciAPI.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ namespace E_CommerciAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class CategoryController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -70,6 +72,26 @@ namespace E_CommerciAPI.Controllers
             return Ok();
         }
 
+        [HttpGet("[Action]")]
+        public async Task<IActionResult> SearchCategory(string searchTerm)
+        {
+            if (string.IsNullOrEmpty(searchTerm))
+            {
+                return BadRequest(new { message = "please enter Name...." });
+            }
+
+
+            var categories = await _context.Categories
+                .Where(p => p.Name.Contains(searchTerm))
+                .ToListAsync();
+
+            if (categories.Count == 0)
+            {
+                return NotFound(new { message = "NotFound Categories." });
+            }
+
+            return Ok(categories);
+        }
+
     }
 }
-//

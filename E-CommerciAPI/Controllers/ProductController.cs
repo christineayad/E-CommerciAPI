@@ -9,7 +9,7 @@ namespace E_CommerciAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize]
+   [Authorize]
     public class ProductController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -88,6 +88,27 @@ namespace E_CommerciAPI.Controllers
             return Ok();
         }
 
+        [HttpGet("[Action]")]
+        public async Task<IActionResult> SearchProduct(string searchTerm)
+        {
+            if (string.IsNullOrEmpty(searchTerm))
+            {
+                return BadRequest(new { message = "please enter Name...." });
+            }
+
+           
+            var products = await _context.Products
+                .Where(p => p.Name.Contains(searchTerm) || p.Category.Name.Contains(searchTerm))
+                .ToListAsync();
+
+            if (products.Count == 0)
+            {
+                return NotFound(new { message = "NotFound Product." });
+            }
+
+            return Ok(products);
+        }
+
+
     }
 }
-//
