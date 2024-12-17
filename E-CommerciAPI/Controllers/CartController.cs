@@ -83,40 +83,10 @@ namespace E_CommerciAPI.Controllers
 
             await _context.SaveChangesAsync();
             return Ok("Product added to cart");
-            //var cart = await _context.Carts.Include(c=>c.CartProducts).SingleOrDefaultAsync(c=>c.UserId==pro.UserId);
-            //if (cart == null)
-            //{
-            //    cart = new Cart
-            //    {
-            //        UserId = pro.UserId,
-            //        CartProducts = new List<CartProduct>()
-            //    };
-            //    _context.Carts.AddAsync(cart);
-            //    await _context.SaveChangesAsync();
-            //}
-            //var cartProduct = cart.CartProducts.FirstOrDefault(cp => cp.ProductId == pro.ProductId);
-
-            //if (cartProduct == null)
-            //{
-            //    cartProduct = new CartProduct
-            //    {
-            //        CartId = cart.Id,
-            //        ProductId = pro.ProductId,
-            //        Quantity = 1
-            //    };
-            //    _context.CartProducts.Add(cartProduct);
-            //}
-            //else
-            //{
-            //    cartProduct.Quantity ++;
-            //}
-
-            //await _context.SaveChangesAsync();
-
-            //return Ok(new { message = "Product added to cart successfully." });
+           
         }
 
-        [HttpGet("{userId}/products")]
+        [HttpGet("[Action]")]
         public async Task<IActionResult> GetCartProducts(string userId)
         {
             // Find the cart for the user and include products
@@ -143,7 +113,7 @@ namespace E_CommerciAPI.Controllers
             return Ok(cartProducts);
         }
 
-        [HttpGet("TotalCost")]
+        [HttpGet("[Action]")]
         //[Authorize]
         public async Task<IActionResult> GetMyCartTotalCost(string userId)
         {
@@ -169,6 +139,99 @@ namespace E_CommerciAPI.Controllers
 
             return Ok(new { TotalCost = totalCost });
         }
+        [HttpPost("[Action]")]
+        public async Task<IActionResult> UpdateCartProduct(string userId, int productId)
+        {
+            
+            var cart = await _context.Carts
+                .Include(c => c.CartProducts)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            if (cart == null)
+            {
+                return NotFound(new { message = "cart not found" });
+            }
+
+          
+            var cartProduct = cart.CartProducts.FirstOrDefault(cp => cp.ProductId == productId);
+
+            if (cartProduct == null)
+            {
+                return NotFound(new { message = "product not found in cart" });
+            }
+
+           
+            if (cartProduct.Quantity > 1)
+            {
+                cartProduct.Quantity -= 1;  
+            }
+            else
+            {
+                
+                _context.CartProducts.Remove(cartProduct);
+            }
+
+          
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = " Updated Cart Succeffuly" });
+        }
+
+        [HttpDelete("[Action]")]
+        public async Task<IActionResult> RemoveAllCart(string userId)
+        {
+            
+            var cart = await _context.Carts
+                .Include(c => c.CartProducts)  
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            if (cart == null)
+            {
+                return NotFound(new { message = "cart not found." });
+            }
+
+           
+            _context.CartProducts.RemoveRange(cart.CartProducts);
+            _context.Carts.Remove(cart);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Deleted Cart Succeffuly." });
+        }
+
+        [HttpPut("[Action]")]
+        public async Task<IActionResult> UpdateCartProductQuantity(string userId, int productId, int quantity)
+        {
+          
+            if (quantity <= 0)
+            {
+                return BadRequest(new { message = "Quantitity must be > 0" });
+            }
+
+           
+            var cart = await _context.Carts
+                .Include(c => c.CartProducts)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            if (cart == null)
+            {
+                return NotFound(new { message = "Cart NotFound" });
+            }
+
+            var cartProduct = cart.CartProducts.FirstOrDefault(cp => cp.ProductId == productId);
+
+            if (cartProduct == null)
+            {
+                return NotFound(new { message = "Product NotFound." });
+            }
+
+            cartProduct.Quantity = quantity;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Updated Cart Succeffuly" });
+        }
+
 
 
     }
